@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ahari\\source\\Youtube\\PrivateTube\\PrivateTube.csproj": {}
+    "C:\\Users\\ahari\\source\\Youtube\\PrivateTube.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ahari\\source\\Youtube\\PrivateTube\\PrivateTube.csproj": {
+    "C:\\Users\\ahari\\source\\Youtube\\PrivateTube.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ahari\\source\\Youtube\\PrivateTube\\PrivateTube.csproj",
+        "projectUniqueName": "C:\\Users\\ahari\\source\\Youtube\\PrivateTube.csproj",
         "projectName": "PrivateTube",
-        "projectPath": "C:\\Users\\ahari\\source\\Youtube\\PrivateTube\\PrivateTube.csproj",
+        "projectPath": "C:\\Users\\ahari\\source\\Youtube\\PrivateTube.csproj",
         "packagesPath": "C:\\Users\\ahari\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ahari\\source\\Youtube\\PrivateTube\\obj\\",
+        "outputPath": "C:\\Users\\ahari\\source\\Youtube\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

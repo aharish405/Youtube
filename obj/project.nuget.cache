@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "HL+yKcrl//w=",
+  "dgSpecHash": "1c7wczNM3WA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\ahari\\source\\Youtube\\PrivateTube\\PrivateTube.csproj",
+  "projectFilePath": "C:\\Users\\ahari\\source\\Youtube\\PrivateTube.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ahari\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\ahari\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PrivateTube")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cc15e40a8a25d6b0e86f008d5920901de743ace6")]
 [assembly: System.Reflection.AssemblyProductAttribute("PrivateTube")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PrivateTube")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
