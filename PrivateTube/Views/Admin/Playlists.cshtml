@@ -1,0 +1,71 @@
+@model IEnumerable<PrivateTube.Models.Playlist>
+
+@{
+    ViewData["Title"] = "Manage Playlists";
+}
+
+<h1>Manage Playlists</h1>
+
+<div style="margin-bottom: 20px;">
+    <a asp-action="CreateVideo" class="btn btn-primary">Add New Video</a>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <h3 style="margin: 0;">Create New Playlist</h3>
+</div>
+
+<div style="background: var(--card-bg); padding: 24px; border-radius: 8px; margin-bottom: 32px;">
+    <form asp-action="CreatePlaylist" method="post" style="display: flex; gap: 10px; align-items: center;">
+        <input type="text" name="name" placeholder="Playlist Name" required
+            style="padding: 10px; background: var(--search-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px; flex: 1; max-width: 300px;" />
+        <input type="text" name="description" placeholder="Description (Optional)"
+            style="padding: 10px; background: var(--search-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px; flex: 2;" />
+        <button type="submit" class="btn"
+            style="background: #3ea6ff; color: #0f0f0f; border: none; padding: 10px 24px; border-radius: 2px; cursor: pointer; font-weight: 600;">CREATE</button>
+    </form>
+</div>
+
+<h2 style="margin-bottom: 20px; font-size: 20px;">All Playlists</h2>
+<div class="grid">
+    @foreach (var playlist in Model)
+    {
+        <div class="card"
+            style="background: var(--card-bg); padding: 24px; border-radius: 12px; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 18px;">@playlist.Name</h3>
+                    <span
+                        style="background: var(--hover-bg); color: #aaa; padding: 2px 8px; border-radius: 4px; font-size: 12px;">@playlist.Videos.Count
+                        videos</span>
+                </div>
+                <form asp-action="DeletePlaylist" asp-route-id="@playlist.Id" method="post"
+                    onsubmit="return confirm('Delete Playist?');">
+                    <button type="submit"
+                        style="color: #cc0000; background: none; border: none; cursor: pointer; font-size: 16px;">🗑</button>
+                </form>
+            </div>
+            <p style="color: #aaa; margin: 0 0 16px 0; font-size: 14px; flex-grow: 1;">@playlist.Description</p>
+
+            <div
+                style="background: var(--search-bg); border-radius: 8px; padding: 12px; max-height: 150px; overflow-y: auto;">
+                <ul style="padding-left: 0; list-style: none; color: var(--text-color); margin: 0; font-size: 13px;">
+                    @foreach (var video in playlist.Videos)
+                    {
+                        <li style="margin-bottom: 4px; display: flex; justify-content: space-between;">
+                            <span>@video.Title</span>
+                            <form asp-action="DeleteVideo" asp-route-id="@video.Id" method="post"
+                                onsubmit="return confirm('Delete Video?');" style="display:inline;">
+                                <button type="submit"
+                                    style="color: #888; background: none; border: none; cursor: pointer; padding: 0 4px;">✕</button>
+                            </form>
+                        </li>
+                    }
+                    @if (!playlist.Videos.Any())
+                    {
+                        <li style="color: #666; padding-left: 20px;">No videos</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,29 @@
+@model PrivateTube.Models.Playlist
+
+@{
+    ViewData["Title"] = "Edit Playlist";
+}
+
+<div style="max-width: 600px; margin: 0 auto; background: var(--card-bg); padding: 32px; border-radius: 8px; margin-top: 40px;">
+    <h2 style="margin-top: 0; margin-bottom: 24px;">Edit Playlist</h2>
+
+    <form asp-action="EditPlaylist" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; color: #aaa;">Name</label>
+            <input asp-for="Name" style="width: 100%; padding: 12px; background: var(--search-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;" required />
+            <span asp-validation-for="Name" style="color: #cc0000; font-size: 12px;"></span>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label style="display: block; margin-bottom: 8px; color: #aaa;">Description</label>
+            <textarea asp-for="Description" rows="4" style="width: 100%; padding: 12px; background: var(--search-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+            <button type="submit" class="btn" style="background: #3ea6ff; color: #0f0f0f; border: none; padding: 10px 24px; border-radius: 2px; cursor: pointer; font-weight: 600;">SAVE CHANGES</button>
+            <a asp-action="Index" style="padding: 10px 24px; color: #aaa; text-decoration: none; align-self: center;">Cancel</a>
+        </div>
+    </form>
+</div>

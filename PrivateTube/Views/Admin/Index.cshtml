@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<h1>Admin Dashboard</h1>
+<div class="grid" style="margin-top: 20px;">
+    <a asp-action="Users" class="card" style="padding: 20px; text-align: center; background: #1e1e1e; border: 1px solid #333; color: white; text-decoration: none;">
+        <h2 style="margin-top: 0;">Users</h2>
+        <p style="color: #aaa;">Manage users and assign playlists</p>
+    </a>
+    <a asp-action="Playlists" class="card" style="padding: 20px; text-align: center; background: #1e1e1e; border: 1px solid #333; color: white; text-decoration: none;">
+        <h2 style="margin-top: 0;">Playlists</h2>
+        <p style="color: #aaa;">Create playlists and add videos</p>
+    </a>
+</div>

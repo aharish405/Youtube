@@ -1,0 +1,24 @@
+@model IEnumerable<PrivateTube.Models.Playlist>
+
+@{
+    ViewData["Title"] = "Playlists";
+}
+
+<h2 style="margin-bottom: 20px;">Your Playlists</h2>
+
+<div class="grid">
+    @foreach (var playlist in Model)
+    {
+            <div class="card" style="background: #1e1e1e; border-radius: 12px; overflow: hidden; cursor: pointer;">
+                <div class="thumbnail" style="display: flex; align-items: center; justify-content: center; background: #222; aspect-ratio: 16/9;">
+                    <span style="font-size: 40px; color: #555;">☰</span>
+                </div>
+                <div class="info" style="padding: 12px;">
+                    <div class="title" style="font-weight: 600; font-size: 16px;">@playlist.Name</div>
+                    <div class="subtitle" style="font-size: 14px; color: #aaa;">@playlist.Videos.Count videos</div>
+                    <!-- Could link to a playlist-specific view or filter Home Index -->
+                     <a href="/Home/Index?query=@playlist.Name" style="font-size: 12px; color: #3ea6ff; text-decoration: none;">View Videos</a>
+                </div>
+            </div>
+    }
+</div>

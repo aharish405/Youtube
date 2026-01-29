@@ -1,0 +1,502 @@
+@model PrivateTube.ViewModels.WatchViewModel
+
+@{
+    ViewData["Title"] = Model.CurrentVideo.Title;
+}
+
+<div class="watch-container">
+    <!-- Main Content: Video Player & Info -->
+    <div class="video-section">
+        <div class="player-wrapper">
+            <div id="player"></div>
+            <!-- Gesture Overlays -->
+            <div class="gesture-zone left" onclick="handleGesture(event, 'back')">
+                <div class="seek-hint">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z">
+                        </path>
+                    </svg>
+                    <span>10s</span>
+                </div>
+            </div>
+            <div class="gesture-zone right" onclick="handleGesture(event, 'forward')">
+                <div class="seek-hint">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z">
+                        </path>
+                    </svg>
+                    <span>10s</span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+            var player;
+            function onYouTubeIframeAPIReady() {
+                player = new YT.Player('player', {
+                    height: '100%',
+                    width: '100%',
+                    videoId: '@Model.CurrentVideo.YouTubeVideoId',
+                    playerVars: {
+                        'autoplay': 1,
+                        'rel': 0,
+                        'modestbranding': 1,
+                        'playsinline': 1
+                    },
+                    events: {
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+            }
+
+            function onPlayerStateChange(event) {
+                if (event.data == YT.PlayerState.ENDED) {
+                    const autoplayCheckbox = document.getElementById('autoplayToggle');
+                    if (autoplayCheckbox && autoplayCheckbox.checked) {
+                        const nextUrl = '@(Model.NextVideo != null ? Url.Action("Watch", new { id = Model.NextVideo.Id }) : "")';
+                        if (nextUrl) { window.location.href = nextUrl; }
+                    }
+                }
+            }
+
+            let lastTap = 0;
+            function handleGesture(e, action) {
+                const now = new Date().getTime();
+                const timesince = now - lastTap;
+                if (timesince < 300 && timesince > 0) {
+                    // Double Tap
+                    if (player && player.getCurrentTime) {
+                        const currentTime = player.getCurrentTime();
+                        const seekTime = action === 'forward' ? currentTime + 10 : currentTime - 10;
+                        player.seekTo(seekTime, true);
+
+                        // Visual Feedback
+                        const zone = e.currentTarget;
+                        zone.classList.add('active');
+                        setTimeout(() => zone.classList.remove('active'), 600);
+                    }
+                    lastTap = 0; // Prevent triple tap
+                } else {
+                    lastTap = now;
+                    // On mobile, single tap should toggle controls. 
+                    // But if we use transparent overlay, it might block the iframe controls.
+                    // We'll let single tap pass through if possible or minimize its impact.
+                }
+            }
+        </script>
+
+        <h1 class="video-title">@Model.CurrentVideo.Title</h1>
+
+        <div class="video-meta">
+            <div class="channel-info">
+                <div class="avatar">
+                    @* Channel Icon (Placeholder) *@
+                    <div
+                        style="width: 100%; height: 100%; border-radius: 50%; background-color: #@((Model.CurrentVideo.PlaylistId.GetHashCode() & 0xFFFFFF).ToString("X6"));">
+                    </div>
+                </div>
+                <div>
+                    <div class="channel-name">@Model.CurrentVideo.Playlist?.Name</div>
+                    <div class="sub-count">1.2M subscribers</div>
+                </div>
+                <button class="subscribe-btn">Subscribe</button>
+            </div>
+
+            <div class="actions">
+                <button class="action-btn">👍 12K</button>
+                <button class="action-btn">👎</button>
+                <button class="action-btn">Share</button>
+                <button class="action-btn">Save</button>
+            </div>
+        </div>
+
+        <div class="description-box">
+            <p><strong>@Model.CurrentVideo.CreatedDate.ToString("MMM dd, yyyy")</strong></p>
+            <p>A sample video from the @Model.CurrentVideo.Playlist?.Name playlist.</p>
+        </div>
+    </div>
+
+    <!-- Sidebar: Recommendations -->
+    <div class="recommendations">
+        @if (Model.NextVideo != null)
+        {
+            <div class="up-next-header">
+                <h3>Up Next</h3>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <span style="font-size: 12px; color: #aaa; text-transform: uppercase; font-weight: 500;">Autoplay</span>
+                    <label class="switch">
+                        <input type="checkbox" id="autoplayToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <a href="@Url.Action("Watch", new { id = Model.NextVideo.Id })" class="rec-card next-video">
+                <div class="rec-thumb">
+                    <img src="https://img.youtube.com/vi/@Model.NextVideo.YouTubeVideoId/mqdefault.jpg" loading="lazy" />
+                    <span class="duration-badge">3:45</span>
+                </div>
+                <div class="rec-info">
+                    <div class="rec-title">@Model.NextVideo.Title</div>
+                    <div class="rec-channel">@Model.NextVideo.Playlist?.Name</div>
+                    <div class="rec-meta">Recommended for you</div>
+                </div>
+            </a>
+
+            <div style="border-bottom: 1px solid #303030; margin: 16px 0;"></div>
+        }
+
+        @foreach (var video in Model.RecommendedVideos.Where(v => v.Id != Model.NextVideo?.Id))
+        {
+            <a href="@Url.Action("Watch", new { id = video.Id })" class="rec-card">
+                <div class="rec-thumb">
+                    <img src="https://img.youtube.com/vi/@video.YouTubeVideoId/mqdefault.jpg" loading="lazy" />
+                    <span class="duration-badge">4:20</span>
+                </div>
+                <div class="rec-info">
+                    <div class="rec-title">@video.Title</div>
+                    <div class="rec-channel">@video.Playlist?.Name</div>
+                    <div class="rec-meta">58K views • 2 weeks ago</div>
+                </div>
+            </a>
+        }
+    </div>
+</div>
+
+<style>
+    .watch-container {
+        display: flex;
+        gap: 24px;
+        max-width: 1700px;
+        margin: 0 auto;
+        padding-top: 24px;
+    }
+
+    .video-section {
+        flex: 1;
+        min-width: 0;
+        /* Enable shrinking */
+    }
+
+    .recommendations {
+        width: 400px;
+        flex-shrink: 0;
+    }
+
+    .player-wrapper {
+        position: relative;
+        padding-bottom: 56.25%;
+        /* 16:9 Aspect Ratio */
+        height: 0;
+        background: #000;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .player-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .video-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 12px 0 8px 0;
+        line-height: normal;
+    }
+
+    .video-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .channel-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #555;
+    }
+
+    .channel-name {
+        font-weight: 500;
+        font-size: 16px;
+    }
+
+    .sub-count {
+        font-size: 12px;
+        color: #aaa;
+    }
+
+    .subscribe-btn {
+        background: #cc0000;
+        /* YouTube Red */
+        /* background: #fff; */
+        color: white;
+        /* color: #0f0f0f; */
+        border: none;
+        padding: 10px 16px;
+        border-radius: 18px;
+        font-weight: 500;
+        cursor: pointer;
+        margin-left: 12px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-btn {
+        background: #272727;
+        color: #fff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 18px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .action-btn:hover {
+        background: #3f3f3f;
+    }
+
+    .description-box {
+        background: #272727;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    /* Recommendations Styles */
+    .rec-card {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+        text-decoration: none;
+        color: white;
+        cursor: pointer;
+    }
+
+    .rec-thumb {
+        position: relative;
+        width: 168px;
+        height: 94px;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: #222;
+    }
+
+    .rec-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .duration-badge {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 1px 4px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .rec-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .rec-title {
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.2;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .rec-channel,
+    .rec-meta {
+        font-size: 12px;
+        color: #aaa;
+    }
+
+    .up-next-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .up-next-header h3 {
+        font-size: 16px;
+        margin: 0;
+    }
+
+    /* Toggle Switch */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 32px;
+        height: 18px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.slider {
+        background-color: #2196F3;
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(14px);
+    }
+
+    /* Gesture Overlays */
+    .gesture-zone {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 30%;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .gesture-zone.left {
+        left: 0;
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+    }
+
+    .gesture-zone.right {
+        right: 0;
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+    }
+
+    .seek-hint {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.3s, transform 0.3s;
+        transform: scale(0.8);
+        pointer-events: none;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 20px;
+        border-radius: 50%;
+    }
+
+    .gesture-zone.active .seek-hint {
+        opacity: 1;
+        transform: scale(1.1);
+        animation: hint-fade 0.6s ease-out forwards;
+    }
+
+    .seek-hint svg {
+        width: 40px;
+        height: 40px;
+        fill: white;
+    }
+
+    .seek-hint span {
+        font-weight: bold;
+        color: white;
+    }
+
+    @@keyframes hint-fade {
+        0% { opacity: 0; transform: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%); }
+        20% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
+    .gesture-zone.active {
+        background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+    }
+
+    @@media (max-width: 1000px) {
+        .watch-container {
+            flex-direction: column;
+            padding: 0; /* Remove padding on mobile for flush video */
+        }
+
+        .video-section {
+            padding: 0;
+        }
+
+        .player-wrapper {
+            border-radius: 0; /* Full width player on mobile */
+        }
+
+        .video-title, .video-meta, .description-box {
+            padding: 0 16px;
+        }
+
+        .recommendations {
+            width: 100%;
+        }
+    }
+</style>

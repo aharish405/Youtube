@@ -1,0 +1,94 @@
+@model PrivateTube.ViewModels.HomeViewModel
+
+@{
+    ViewData["Title"] = "YouTube Studio";
+}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <h1>Channel Dashboard</h1>
+    <div style="display: flex; gap: 10px;">
+        <a asp-action="CreatePlaylist" class="btn"
+            style="background: #272727; color: white; border: 1px solid #333; padding: 10px 16px; border-radius: 4px; text-decoration: none;">New
+            Playlist</a>
+        <a asp-action="CreateVideo" class="btn"
+            style="background: #cc0000; color: white; padding: 10px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">UPLOAD
+            VIDEO</a>
+    </div>
+</div>
+
+<h3 style="margin-top: 30px; margin-bottom: 16px;">Your Playlists</h3>
+@if (Model.Playlists.Any())
+{
+    <div class="grid">
+        @foreach (var playlist in Model.Playlists)
+        {
+            <div class="card" style="background: var(--card-bg); padding: 20px; border-radius: 8px;">
+                <div class="info">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <h3 style="margin-top: 0; font-size: 18px;">@playlist.Name</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <a asp-action="EditPlaylist" asp-route-id="@playlist.Id" class="btn-sm"
+                                style="color: var(--text-color); padding: 4px;">✎</a>
+                            <form asp-action="DeletePlaylist" asp-route-id="@playlist.Id" method="post"
+                                onsubmit="return confirm('Are you sure?');">
+                                <button type="submit" class="btn-sm"
+                                    style="background: none; border: none; color: #cc0000; cursor: pointer; padding: 4px;">🗑</button>
+                            </form>
+                        </div>
+                    </div>
+                    <p style="color: #aaa; margin-bottom: 10px; font-size: 12px;">@playlist.Videos.Count videos</p>
+                    <p style="color: #888; font-size: 14px;">@playlist.Description</p>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p style="color: #aaa;">You haven't created any playlists yet.</p>
+}
+
+<h3 style="margin-top: 40px; margin-bottom: 16px;">Your Videos</h3>
+@if (Model.Videos.Any())
+{
+    <table
+        style="width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden;">
+        <thead>
+            <tr style="background: var(--hover-bg);">
+                <th style="padding: 12px; text-align: left; color: #aaa;">Video</th>
+                <th style="padding: 12px; text-align: left; color: #aaa;">Date</th>
+                <th style="padding: 12px; text-align: left; color: #aaa;">Playlist</th>
+                <th style="padding: 12px; text-align: left; color: #aaa;">Views</th>
+                <th style="padding: 12px; text-align: right; color: #aaa;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var video in Model.Videos)
+            {
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 12px;">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <img src="https://img.youtube.com/vi/@video.YouTubeVideoId/default.jpg"
+                                style="width: 80px; height: 45px; object-fit: cover; border-radius: 4px;" />
+                            <span>@video.Title</span>
+                        </div>
+                    </td>
+                    <td style="padding: 12px; color: #aaa;">@video.CreatedDate.ToString("MMM dd, yyyy")</td>
+                    <td style="padding: 12px; color: #aaa;">@video.Playlist?.Name</td>
+                    <td style="padding: 12px; color: #aaa;">0</td>
+                    <td style="padding: 12px; text-align: right;">
+                        <form asp-action="DeleteVideo" asp-route-id="@video.Id" method="post"
+                            onsubmit="return confirm('Delete video?');">
+                            <button type="submit"
+                                style="background: none; border: none; color: #cc0000; cursor: pointer;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p style="color: #aaa;">You haven't uploaded any videos yet.</p>
+}

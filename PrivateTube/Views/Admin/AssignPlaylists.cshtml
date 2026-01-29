@@ -1,0 +1,32 @@
+@model IEnumerable<PrivateTube.Models.Playlist>
+@using PrivateTube.Models
+@{
+    ViewData["Title"] = "Assign Playlists";
+    var user = ViewBag.User as User;
+    var assignedIds = ViewBag.AssignedIds as List<int>;
+}
+
+<h1>Assign Playlists to: <span style="color: #cc0000">@user?.Username</span></h1>
+
+<form asp-action="AssignPlaylists" method="post">
+    <input type="hidden" name="userId" value="@user?.Id" />
+
+    <div class="grid">
+        @foreach (var playlist in Model)
+        {
+            var isChecked = assignedIds != null && assignedIds.Contains(playlist.Id);
+            <label class="card" style="padding: 20px; display: flex; align-items: center; gap: 10px; background: #1e1e1e; border: 1px solid #333; cursor: pointer;">
+                <input type="checkbox" name="playlistIds" value="@playlist.Id" style="width: 20px; margin: 0; background: #222;" @(isChecked ? "checked" : "") />
+                <div style="color: white;">
+                    <div style="font-weight: bold;">@playlist.Name</div>
+                    <div style="font-size: 12px; color: #aaa;">@playlist.Videos.Count videos</div>
+                </div>
+            </label>
+        }
+    </div>
+
+    <div style="margin-top: 20px;">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-action="Users" class="btn">Cancel</a>
+    </div>
+</form>

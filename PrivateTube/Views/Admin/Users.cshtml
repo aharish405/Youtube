@@ -1,0 +1,61 @@
+@model IEnumerable<PrivateTube.Models.User>
+
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<h1>Manage Users</h1>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h3 style="margin: 0;">Manage Users</h3>
+        <a asp-action="CreateUser" class="btn" style="background: #3ea6ff; color: #0f0f0f; border: none; padding: 10px 24px; border-radius: 2px; cursor: pointer; text-decoration: none; font-weight: 600;">CREATE USER</a>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background: var(--card-bg); border-radius: 8px; overflow: hidden;">
+        <thead>
+            <tr style="background: var(--hover-bg);">
+                <th style="padding: 12px 20px; text-align: left; color: #aaa; font-weight: 500;">Username</th>
+                <th style="padding: 12px 20px; text-align: left; color: #aaa; font-weight: 500;">Role</th>
+                <th style="padding: 12px 20px; text-align: left; color: #aaa; font-weight: 500;">Status</th>
+                <th style="padding: 12px 20px; text-align: left; color: #aaa; font-weight: 500;">Playlists Access</th>
+                <th style="padding: 12px 20px; text-align: right; color: #aaa; font-weight: 500;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model)
+        {
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 16px 20px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 32px; height: 32px; background: #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: white;">@user.Username.Substring(0,1).ToUpper()</div>
+                                    <span>@user.Username</span>
+                                </div>
+                            </td>
+                            <td style="padding: 16px 20px;">
+
+                                             <span style="background: #333; padding: 4px 8px; border-radius: 4px; font-size: 12px;">@user.Role</span>
+
+                                             </td>
+                                <td style="padding: 16px 20px;">
+                    @if (user.IsActive)
+                    {
+                                                    <span style="color: #2ba640;">● Active</span>
+                    }
+                    else
+                    {
+                                                    <span style="color: #aaa;">● Inactive</span>
+                    }
+                                </td>
+                                <td style="padding: 16px 20px; color: #aaa;">@user.PlaylistAccesses.Count playlists</td>
+                                <td style="padding: 16px 20px; text-align: right;">
+                                    <div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
+                                        <a asp-action="AssignPlaylists" asp-route-userId="@user.Id" style="color: #3ea6ff; text-decoration: none; font-size: 14px; font-weight: 500;">ACCESS</a>
+                                        <form asp-action="DeleteUser" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Delete user @user.Username?');" style="margin:0;">
+                                            <button type="submit" style="color: #cc0000; background: none; border: none; font-weight: 500; cursor: pointer;">DELETE</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+        }
+        </tbody>
+    </table>
